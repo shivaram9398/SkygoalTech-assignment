@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "shiva",
+            "group": "self",
+            "database": "${workspaceFolder:skyGoalTEch}/userdetails.db"
+        }
+    ]
+}

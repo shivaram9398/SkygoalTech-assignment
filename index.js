@@ -12,7 +12,8 @@ const sqlite3 = require("sqlite3");
 
 const databasePath = path.join(__dirname, "userdetails.db");
 
-app.use(express.json())
+app.use(express.json()) //It is a built-in middleware function it recognizes the incoming request object as a JSON object, parses it, and then calls handler in every API call
+
 console.log('Current directory:', __dirname);
 
 let database;
@@ -84,3 +85,72 @@ const Server = async () => {
       }
     }
   });
+
+  //middleware function
+
+  const verfingToken = (request, response, next) => {
+    let jwtToken;
+    const authHeader = request.headers["authorization"];
+    if (authHeader !== undefined) {
+      jwtToken = authHeader.split(" ")[1];
+    }
+    if (jwtToken === undefined) {
+      response.status(401);
+      response.send("Invalid JWT Token");
+    } else {
+      jwt.verify(jwtToken, "skygoaltech", async (error, payload) => {
+        if (error) {
+          response.status(401);
+          response.send("Invalid JWT Token");
+        } else {
+          request.username = payload.username;
+          next();
+        }
+      });
+    }
+  };
+
+
+  // api call to get highest run getter 
+  app.get("/highest_runs/",verfingToken, async (req,res)=> {
+    const {limit}=req.query
+    try {
+      const query=`SELECT 
+      name,
+      runs,
+      team
+  FROM 
+      player
+  ORDER BY 
+      runs DESC
+  LIMIT ${limit};`
+
+  const responsedb=await database.all(query)
+  res.send(responsedb)
+    }catch(error) {
+      res.status(500).send("Internal Server Error");
+    }
+  })
+
+
+  //api call to highest strikerate
+
+  app.get("/highest_strikerate/",verfingToken, async (req,res)=> {
+    const {limit}=req.query
+    try {
+      const query=`SELECT 
+      name,
+      runs,
+      team
+  FROM 
+      player
+  ORDER BY 
+  strike_rate DESC
+  LIMIT ${limit};`
+
+  const responsedb=await database.all(query)
+  res.send(responsedb)
+    }catch(error) {
+      res.status(500).send("Internal Server Error");
+    }
+  })

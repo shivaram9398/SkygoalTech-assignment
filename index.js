@@ -76,7 +76,7 @@ const Server = async () => {
         const payload = {
             username: username,
           };
-          const jwtToken = jwt.sign(payload, "MY_SECRET_TOKEN"); // arguments as payload and secret key
+          const jwtToken = jwt.sign(payload, "skygoaltech"); // arguments as payload and secret key
           response.send({ jwtToken });
       } else {
         response.status(400);
